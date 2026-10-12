@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060a16">
+<title>QuickShare — fayllarni asl sifatda yuboring</title>
+<meta name="description" content="Rasm va videolarni siqmasdan, qurilmalar orasida to'g'ridan-to'g'ri uzating.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c6cff'/%3E%3Cpath d='M20 34l24-14-8 26-6-9z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body data-phase="idle" data-role="">
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="top">
+  <a class="logo" href="/" aria-label="QuickShare">
+    <span class="logo-mark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-3-7z"/></svg></span>
+    <span>Quick<b>Share</b></span>
+  </a>
+  <div class="badges">
+    <span class="badge">Asl sifat</span>
+    <span class="badge">Shifrlangan</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Fayllarni <em>asl sifatda</em> uzating</h1>
+    <p>Rasm va videolar siqilmaydi va serverga yuklanmaydi — qurilmalar orasida to‘g‘ridan-to‘g‘ri o‘tadi.</p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Rejim">
+    <button class="tab active" role="tab" data-tab="send" aria-selected="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg> Yuborish
+    </button>
+    <button class="tab" role="tab" data-tab="receive" aria-selected="false">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg> Qabul qilish
+    </button>
+  </nav>
+
+  <!-- ===== YUBORISH ===== -->
+  <section id="tab-send" class="panel grid2">
+    <div class="card" id="pickCard">
+      <div class="step"><span>1</span> Fayllarni tanlang</div>
+      <label class="drop" id="drop" for="fileInput">
+        <input id="fileInput" type="file" multiple hidden>
+        <div class="drop-ic">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        </div>
+        <b>Rasm yoki videolarni tanlang</b>
+        <span>yoki shu yerga tashlang · bir nechta fayl mumkin</span>
+      </label>
+    </div>
+
+    <div class="card" id="linkCard">
+      <div class="step"><span>2</span> Qurilmani ulang</div>
+      <div id="linkIdle">
+        <p class="muted">QR-kod yarating va ikkinchi qurilmada skaner qiling.</p>
+        <button class="btn primary big" id="btnCreate">QR-kod yaratish</button>
+      </div>
+      <div id="linkQR" class="hidden">
+        <div class="qr"><canvas id="qrCanvas" width="10" height="10"></canvas></div>
+        <div class="code-row">
+          <span class="code" id="codeText">--------</span>
+          <button class="btn ghost sm" id="btnCopy" type="button">Nusxalash</button>
+          <button class="btn ghost sm hidden" id="btnShare" type="button">Ulashish</button>
+        </div>
+        <p class="muted small center">Qabul qiluvchi QR-kodni kamera bilan skaner qilsin yoki kodni kiritsin.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== QABUL QILISH ===== -->
+  <section id="tab-receive" class="panel hidden">
+    <div class="card" id="joinCard">
+      <div class="step"><span>1</span> Yuboruvchiga ulaning</div>
+      <div class="grid2 inner">
+        <div>
+          <p class="muted">Yuboruvchi ekranidagi QR-kodni skaner qiling.</p>
+          <button class="btn primary big" id="btnScan">Kamerani yoqish</button>
+          <div class="scanbox hidden" id="scanBox">
+            <video id="scanVideo" playsinline muted></video>
+            <div class="scan-frame"></div>
+            <button class="btn ghost sm scan-stop" id="btnScanStop" type="button">Yopish</button>
+          </div>
+        </div>
+        <div>
+          <p class="muted">Yoki kodni qo‘lda kiriting:</p>
+          <form id="joinForm" class="join-row" autocomplete="off">
+            <input id="codeInput" class="input" placeholder="MASALAN: K7M2Q9XB" maxlength="40" autocapitalize="characters" spellcheck="false" aria-label="Ulanish kodi">
+            <button class="btn primary" type="submit">Ulanish</button>
+          </form>
+        </div>
+      </div>
+      <p class="note" id="capNote"></p>
+    </div>
+  </section>
+
+  <!-- ===== SEANS ===== -->
+  <section id="session" class="card session hidden">
+    <div class="sess-left">
+      <span class="dot" id="sessDot"></span>
+      <div>
+        <div class="sess-text" id="sessText">—</div>
+        <div class="sess-sub" id="sessSub"></div>
+      </div>
+    </div>
+    <div class="sess-right">
+      <div class="sas hidden" id="sasBox" title="Ikkala qurilmada bir xil raqam chiqishi kerak">
+        <small>Tekshiruv kodi</small><b id="sasCode">—</b>
+      </div>
+      <button class="btn ghost sm" id="btnEnd" type="button">Seansni tugatish</button>
+    </div>
+  </section>
+
+  <!-- ===== UZATISH ===== -->
+  <section id="transfer" class="card hidden">
+    <div class="sum">
+      <div class="ring" id="ring" style="--p:0"><span id="pct">0%</span></div>
+      <div class="sum-info">
+        <div class="sum-title" id="sumTitle">Fayllar</div>
+        <div class="stats">
+          <div><small>Tezlik</small><b id="stSpeed">—</b></div>
+          <div><small>Qolgan vaqt</small><b id="stEta">—</b></div>
+          <div><small>Hajm</small><b id="stBytes">—</b></div>
+          <div><small>Fayllar</small><b id="stCount">—</b></div>
+        </div>
+      </div>
+    </div>
+    <ul class="list" id="list"></ul>
+    <div class="actions">
+      <button class="btn primary hidden" id="btnAccept" type="button">Qabul qilish</button>
+      <button class="btn danger" id="btnCancelAll" type="button">Hammasini bekor qilish</button>
+    </div>
+  </section>
+
+  <p class="foot">Fayllar serverga yuklanmaydi: ular WebRTC orqali (DTLS bilan shifrlangan) qurilmalar orasida to‘g‘ridan-to‘g‘ri uzatiladi. Server faqat ulanishni tanishtiradi.</p>
+</main>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script src="/vendor/qrcode.js"></script>
+<script src="/vendor/jsQR.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
