@@ -676,14 +676,26 @@
     } catch (err) { failRx(it, err); }
   }
 
-  function download(it) {
-    if (!it.result) return;
-    const url = URL.createObjectURL(it.result.blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = safeName(it.name);
-    document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 120000);
-  }
+```javascript
+function download(it) {
+  if (!it.result) return;
+
+  const url = URL.createObjectURL(it.result.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = safeName(it.name);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  toast(
+    'Yuklash boshlandi! Fayl odatda Downloads papkasiga saqlanadi.',
+    'ok'
+  );
+
+  setTimeout(() => URL.revokeObjectURL(url), 120000);
+}
+```
 
   async function uniqueName(dir, name) {
     const m = /^(.*?)(\.[^.]*)?$/.exec(name);
